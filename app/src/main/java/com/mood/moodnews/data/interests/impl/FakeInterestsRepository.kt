@@ -4,7 +4,11 @@ import com.mood.moodnews.data.Result
 import com.mood.moodnews.data.interests.InterestsRepository
 import com.mood.moodnews.data.interests.InterestsSection
 import com.mood.moodnews.data.interests.TopicSelection
+import com.mood.moodnews.utils.addOrRemove
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 
 class FakeInterestsRepository : InterestsRepository {
 
@@ -48,39 +52,53 @@ class FakeInterestsRepository : InterestsRepository {
         )
     }
 
+    // for now, keep the selections in memory
+    private val selectedTopics = MutableStateFlow(setOf<TopicSelection>())
+    private val selectedPeople = MutableStateFlow(setOf<String>())
+    private val selectedPublications = MutableStateFlow(setOf<String>())
+
+    // Used to make suspend functions that read and update state safe to call from any thread
+    private val mutex = Mutex()
+
     override suspend fun getTopics(): Result<List<InterestsSection>> {
-        TODO("Not yet implemented")
+        return Result.Success(topics)
     }
 
     override suspend fun getPeople(): Result<List<String>> {
-        TODO("Not yet implemented")
+        return Result.Success(people)
     }
 
     override suspend fun getPublications(): Result<List<String>> {
-        TODO("Not yet implemented")
+        return Result.Success(publications)
     }
 
     override suspend fun toggleTopicsSelection(topic: TopicSelection) {
-        TODO("Not yet implemented")
+        mutex.withLock {
+            val set = selectedTopics.value.toMutableSet()
+            set.addOrRemove(topic)
+            selectedTopics.value = set
+        }
     }
 
     override suspend fun togglePersonSelected(person: String) {
-        TODO("Not yet implemented")
+        mutex.withLock {
+            val set = selectedPeople.value.toMutableSet()
+            set.addOrRemove(person)
+            selectedPeople.value = set
+        }
     }
 
     override suspend fun togglePublicationSelected(publication: String) {
-        TODO("Not yet implemented")
+        mutex.withLock {
+            val set = selectedPublications.value.toMutableSet()
+            set.addOrRemove(publication)
+            selectedPublications.value = set
+        }
     }
 
-    override fun observeTopicsSelected(): Flow<Set<TopicSelection>> {
-        TODO("Not yet implemented")
-    }
+    override fun observeTopicsSelected(): Flow<Set<TopicSelection>> = selectedTopics
 
-    override fun observePeopleSelected(): Flow<Set<String>> {
-        TODO("Not yet implemented")
-    }
+    override fun observePeopleSelected(): Flow<Set<String>> = selectedPeople
 
-    override fun observePublicationSelected(): Flow<Set<String>> {
-        TODO("Not yet implemented")
-    }
+    override fun observePublicationSelected(): Flow<Set<String>> = selectedPublications
 }

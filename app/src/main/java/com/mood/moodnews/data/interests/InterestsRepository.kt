@@ -28,7 +28,7 @@ interface InterestsRepository {
     /**
      * Toggle between selected and unselected.
      */
-    suspend fun toggleTopicsSelection(topic: TopicSelection)
+    suspend fun toggleTopicSelection(topic: TopicSelection)
 
     /**
      * Toggle between selected and unselected.

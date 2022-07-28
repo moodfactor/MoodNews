@@ -101,9 +101,6 @@ fun ArticleScreen(
     }
 }
 
-
-
-
 /**
  * Stateless Article Screen that displays a single post.
  *
@@ -252,7 +249,7 @@ fun sharePost(post: Post, context: Context) {
 fun PreviewArticleDrawer() {
     MoodNewsTheme {
         val post = runBlocking {
-            (BlockingFakePostsRepository().getPost(post3.id) as com.mood.moodnews.data.Result.Success).data
+            (BlockingFakePostsRepository().getPost(post3.id) as Result.Success).data
         }
         ArticleScreen(post, false, {}, false, {})
     }

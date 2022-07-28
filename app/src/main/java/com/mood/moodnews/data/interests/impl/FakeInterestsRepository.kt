@@ -72,7 +72,7 @@ class FakeInterestsRepository : InterestsRepository {
         return Result.Success(publications)
     }
 
-    override suspend fun toggleTopicsSelection(topic: TopicSelection) {
+    override suspend fun toggleTopicSelection(topic: TopicSelection) {
         mutex.withLock {
             val set = selectedTopics.value.toMutableSet()
             set.addOrRemove(topic)
